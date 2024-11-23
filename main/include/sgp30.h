@@ -70,6 +70,13 @@ typedef struct
     uint16_t tvoc_result;
     uint8_t crc_tvoc;
 } sgp30_return_values_measure_iaq;
+typedef struct
+{
+    uint16_t co2_result;
+    uint8_t crc_co2;
+    uint16_t tvoc_result;
+    uint8_t crc_tvoc;
+} sgp30_return_values_iaq_baseline;
 
 esp_err_t sgp30_execute_command(sgp30_sensor *sensor, uint8_t command[], uint8_t command_length, uint16_t delay, uint8_t *read_data, uint8_t read_data_length);
 
@@ -77,9 +84,9 @@ void sgp30_init(sgp30_sensor *sensor);
 
 sgp30_return_values_measure_iaq sgp30_measure_iaq(sgp30_sensor *sensor);
 sgp30_return_values_measure_test sgp30_measure_test(sgp30_sensor *sensor);
+sgp30_return_values_iaq_baseline sgp30_get_iaq_baseline(sgp30_sensor *sensor);
 
 void sgp30_iaq_init(sgp30_sensor *sensor);
-void sgp30_get_iaq_baseline(sgp30_sensor *sensor);
 void sgp30_set_iaq_baseline(sgp30_sensor *sensor);
 void sgp30_set_absolute_humidity(sgp30_sensor *sensor);
 void sgp30_set_iaq_baseline(sgp30_sensor *sensor);
@@ -90,6 +97,7 @@ void sgp30_set_tvoc_baseline(sgp30_sensor *sensor);
 
 uint8_t sgp30_calculate_CRC(uint8_t *data, uint8_t len);
 
-void sgp30_print(void *result_pointer, uint16_t type);
+void sgp30_print_measure_iaq(sgp30_return_values_measure_iaq *results);
+void sgp30_print_measure_test(sgp30_return_values_measure_test *results);
 
 #endif

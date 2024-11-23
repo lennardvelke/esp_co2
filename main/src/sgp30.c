@@ -65,8 +65,22 @@ sgp30_return_values_measure_iaq sgp30_measure_iaq(sgp30_sensor *sensor)
     };
 }
 
-void sgp30_get_iaq_baseline(sgp30_sensor *sensor)
+sgp30_return_values_iaq_baseline sgp30_get_iaq_baseline(sgp30_sensor *sensor)
 {
+    uint8_t writebuffer[2] = {(uint8_t)(SGP30_GET_IAQ_BASELINE >> 8) & 0xff, (uint8_t)(SGP30_GET_IAQ_BASELINE >> 0) & 0xff};
+    uint8_t readbuffer[6] = {0};
+
+    sgp30_execute_command(sensor, writebuffer, 2, 10, readbuffer, 6);
+
+    uint16_t co2_result = (readbuffer[0] << 8) + readbuffer[1];
+    uint16_t tvoc_result = (readbuffer[4] << 8) + readbuffer[3];
+
+    return (sgp30_return_values_iaq_baseline){
+        co2_result,
+        readbuffer[2],
+        tvoc_result,
+        readbuffer[5],
+    };
 }
 
 void sgp30_set_absolute_humidity(sgp30_sensor *sensor)
@@ -75,6 +89,10 @@ void sgp30_set_absolute_humidity(sgp30_sensor *sensor)
 
 void sgp30_set_iaq_baseline(sgp30_sensor *sensor)
 {
+
+    uint8_t writebuffer[8] = {(SGP30_MEASURE_TEST >> 8) & 0xff, (uint8_t)(SGP30_MEASURE_TEST >> 0) & 0xff};
+
+    sgp30_execute_command(sensor, writebuffer, 8, 10, NULL, 0);
 }
 
 sgp30_return_values_measure_test sgp30_measure_test(sgp30_sensor *sensor)
@@ -145,21 +163,14 @@ uint8_t sgp30_calculate_CRC(uint8_t *data, uint8_t len)
     return crc;
 }
 
-void sgp30_print(void *result_pointer, const uint16_t type)
+void sgp30_print_measure_iaq(sgp30_return_values_measure_iaq *results)
 {
 
-    switch (type)
-    {
-    case SGP30_MEASURE_IAQ:
-        sgp30_return_values_measure_iaq result = *(sgp30_return_values_measure_iaq *)(result_pointer);
-        printf("Results for measure_iaq:\n     The CO2 Data is: %d;\n     The CRC of CO2 is: %d;\n     The Tvoc Data is: %d;\n     The CRC of Tvoc is: %d;\n", result.co2_result, result.crc_co2, result.tvoc_result, result.crc_tvoc);
-        break;
-    case SGP30_MEASURE_TEST:
-        sgp30_return_values_measure_test result2 = *(sgp30_return_values_measure_test *)(result_pointer);
-        printf("Results for measure_test:\n     The fixed Data Pattern is: %d;\n     The CRC is: %d;\n", result2.fixed_data_pattern, result2.crc);
-        break;
+    printf("Results for measure_iaq:\n     The CO2 Data is: %d;\n     The CRC of CO2 is: %d;\n     The Tvoc Data is: %d;\n     The CRC of Tvoc is: %d;\n", results->co2_result, results->crc_co2, results->tvoc_result, results->crc_tvoc);
+}
 
-    default:
-        break;
-    }
+void sgp30_print_measure_test(sgp30_return_values_measure_test *results)
+{
+
+    printf("Results for measure_test:\n     The fixed Data Pattern is: %d;\n     The CRC is: %d;\n", results->fixed_data_pattern, results->crc);
 }

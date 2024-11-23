@@ -12,6 +12,7 @@
 #include "i2c_wrapper.h"
 #include "sgp30.h"
 #include <stdio.h>
+#include <string.h>
 
 #define I2C_MASTER_SCL_IO 22        /*!< GPIO number used for I2C master clock */
 #define I2C_MASTER_SDA_IO 21        /*!< GPIO number used for I2C master data  */
@@ -20,6 +21,16 @@
 #define I2C_MASTER_TX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_TIMEOUT_MS 1000
+
+uint16_t getAverage(uint16_t *array, uint16_t array_size)
+{
+    uint32_t AVG = 0;
+    for (size_t i = 0; i < array_size - 1; i++)
+    {
+        AVG += array[i];
+    }
+    return AVG / array_size;
+}
 
 void app_main(void)
 {
@@ -51,24 +62,35 @@ void app_main(void)
 
     sensor.dev_handle = &dev_handle;
 
+    uint16_t last_five_min[300] = {0};
+
+    uint16_t average = 0;
+
     sgp30_iaq_init(&sensor);
     int n = 0;
     while (1)
     {
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        printf("Time since start %d \n", n++);
+        vTaskDelay(800 / portTICK_PERIOD_MS);
 
         sgp30_return_values_measure_iaq temp = sgp30_measure_iaq(&sensor);
-        sgp30_print(&temp, SGP30_MEASURE_IAQ);
+        sgp30_return_values_iaq_baseline temp2 = sgp30_get_iaq_baseline(&sensor);
+
+        uint16_t last_item = last_five_min[299];
+
+        memmove(&last_five_min[1], &last_five_min[0], (300 - 1) * sizeof(uint16_t));
+        last_five_min[0] = temp.co2_result;
+
+        average = getAverage(last_five_min, 300);
+
+        printf("CO2: %d; AVG: %d; Baseline: %d \n", temp.co2_result, average, temp2.co2_result);
+        // sgp30_print_measure_iaq(&temp);
     }
 
     sgp30_return_values_measure_test test;
 
     test = sgp30_measure_test(&sensor);
 
-    sgp30_print(&test, SGP30_MEASURE_TEST);
-
-    // sgp30_get_feature_set(&sensor);
+    sgp30_print_measure_test(&test);
 
     sgp30_init(&sensor);
 
