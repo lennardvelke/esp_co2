@@ -51,7 +51,7 @@ void app_main(void)
     i2c_device_config_t dev_cfg = {
         .dev_addr_length = I2C_ADDR_BIT_LEN_7,
         .device_address = 0x58,
-        .scl_speed_hz = 100000,
+        .scl_speed_hz = 200000,
     };
 
     i2c_master_dev_handle_t dev_handle;
@@ -66,14 +66,23 @@ void app_main(void)
 
     uint16_t average = 0;
 
+    // sgp30_init(&sensor);
+
+    // sgp30_result_values_measure_test measure_test;
+
+    // measure_test = sgp30_measure_test(&sensor);
+
+    // sgp30_print_measure_test(&measure_test);
+
     sgp30_iaq_init(&sensor);
+    // sgp30_set_iaq_baseline(&sensor, 48000, 38000);
     int n = 0;
     while (1)
     {
-        vTaskDelay(800 / portTICK_PERIOD_MS);
+        vTaskDelay(300 / portTICK_PERIOD_MS);
 
-        sgp30_return_values_measure_iaq temp = sgp30_measure_iaq(&sensor);
-        sgp30_return_values_iaq_baseline temp2 = sgp30_get_iaq_baseline(&sensor);
+        sgp30_result_values_measure_iaq temp = sgp30_measure_iaq(&sensor);
+        sgp30_result_values_iaq_baseline temp2 = sgp30_get_iaq_baseline(&sensor);
 
         uint16_t last_item = last_five_min[299];
 
@@ -85,12 +94,6 @@ void app_main(void)
         printf("CO2: %d; AVG: %d; Baseline: %d \n", temp.co2_result, average, temp2.co2_result);
         // sgp30_print_measure_iaq(&temp);
     }
-
-    sgp30_return_values_measure_test test;
-
-    test = sgp30_measure_test(&sensor);
-
-    sgp30_print_measure_test(&test);
 
     sgp30_init(&sensor);
 
