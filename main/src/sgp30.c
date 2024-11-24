@@ -144,7 +144,7 @@ sgp30_result_values_measure_test sgp30_measure_test(sgp30_sensor *sensor)
 
     sgp30_execute_command(sensor, writebuffer, 2, 220, readbuffer, 3);
 
-    uint16_t fixed_data_pattern = (readbuffer[1] << 8) + readbuffer[0];
+    uint16_t fixed_data_pattern = (readbuffer[0] << 8) + readbuffer[1];
     printf("%d;%d", readbuffer[0], readbuffer[1]);
     return (sgp30_result_values_measure_test){
         fixed_data_pattern,
