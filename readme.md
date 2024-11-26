@@ -27,6 +27,6 @@ Make sure you have Docker installed for windows.
 
         docker run -t -i --privileged -v /dev/bus/usb:/dev/bus/usb esp_idf:v1 /bin/bash
     
-    Now is your USB ESP32 connected with this newly start Dev Container
+    Now your is USB ESP32 connected with this newly start Dev Container
 
 
