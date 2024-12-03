@@ -1,0 +1,3 @@
+#prama once
+
+#typedef

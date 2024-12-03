@@ -1,5 +1,29 @@
 # Welcome to my ESP32 Sensor
 
+## How to connect your ESP32 to WSL from Windows
+
+
+
+1. **Only if your ESP32 isnt already a shared device**
+    1. Install [usbipd-win](https://github.com/dorssel/usbipd-win/releases) 
+    2. Open your Windows Powershell as an administrator.
+    3. First of all you need the busid for your ESP32. To get this you can run
+
+            usbipd list
+
+       Mostlikly it is a UART Brigde
+    4. Run for example the following command (Your terminal has to be in Admin Mode)
+
+            usbipd bind --busid 1-1
+        
+       Now your ESP32 is a shared device and can be linked to the WSL 
+2. **Connect your ESP32**
+        1. Run for example
+
+                usbipd attach -a -w --busid 1-1
+        
+        Now your ESP32 is linked to the WSL 
+
 
 ## Start on Windows with Docker and WSL
 
