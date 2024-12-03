@@ -1,7 +1,10 @@
 #pragma once
 
-#typedef struct{
-    uint8_t[6] mac,
-    uint8_t[32] name,
-    
+#include <inttypes.h>
+
+typedef struct
+{
+    uint8_t mac[6];
+    uint8_t name[32];
+
 } slave_device;

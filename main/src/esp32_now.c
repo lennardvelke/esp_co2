@@ -1,5 +1,6 @@
 #include "esp32_now.h"
 #include "esp_now.h"
+#include "stdio.h"
 #include "wifi.h"
 void esp32_now_send_cb(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
@@ -9,8 +10,7 @@ void esp32_now_send_cb(const uint8_t *mac_addr, esp_now_send_status_t status)
 
 void esp32_now_recv_cb(const esp_now_recv_info_t *esp_now_info, const uint8_t *data, int data_len)
 {
-     printf("The recv callback was called with the mac-Address " MACSTR "! The Status is %d \n", MAC2STR(mac_addr), status);
-     
+    printf("The recv callback was called with the mac-Address " MACSTR "! The Status is %d \n", MAC2STR(mac_addr), status);
 }
 
 void esp32_now_init()
