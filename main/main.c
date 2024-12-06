@@ -7,10 +7,7 @@
 void app_main()
 {
 
-    wifi_init_including_nvs();
-
-    esp32_now_init();
-    while (1)
+        while (1)
     {
         vTaskDelay(100);
         // uint8_t data = {1, 2, 3, 4};
